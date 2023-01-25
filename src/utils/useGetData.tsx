@@ -10,11 +10,23 @@ export const useGetData = () => {
 	const getData = async () => {
 		try {
 			const req = await fetch(
-				`https://stein.efishery.com/v1/storages/5e1edf521073e315924ceab4/list?limit=10&sort={"uuid":"ascending"}`
+				`https://stein.efishery.com/v1/storages/5e1edf521073e315924ceab4/list?`
 				// search={"komoditas":"LELE"}
 			)
 			const res: Data[] = await req.json()
-			setData(res)
+			const tmpArr: Data[] = []
+			for (const item of res) {
+				if (
+					(Object.keys(item) as (keyof Data)[]).some(
+						(val) => item[val] == null
+					)
+				) {
+					continue
+				}
+				tmpArr.push(item)
+      }
+      console.log(tmpArr)
+			setData(tmpArr)
 		} catch (error) {
 			console.log(error)
 		}
@@ -66,7 +78,7 @@ export const useGetData = () => {
 	}, [])
 
 	useEffect(() => {
-		// getData()
+		getData()
 		getSize()
 		getArea()
 	}, [])
