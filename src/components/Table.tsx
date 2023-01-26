@@ -1,37 +1,41 @@
 import React from "react"
 import { Data } from "type/Data"
+import styles from "./Table.module.scss"
 
 export default function Table({ data }: { data: Data[] }) {
 	return (
-		<div>
 			<table>
 				<thead>
 					<tr>
-						<th>UUID</th>
-						<th>Komoditas</th>
-						<th>Provinsi</th>
-						<th>Kota</th>
-						<th>Size</th>
-						<th>Price</th>
-						<th>Tanggal</th>
-						<th>Timestamp</th>
+						{/* <th className={styles.header}>UUID</th> */}
+						<th className={styles.header}>Komoditas</th>
+						<th className={styles.header}>Provinsi</th>
+						<th className={styles.header}>Kota</th>
+						<th className={styles.header}>Size</th>
+						<th className={styles.header}>Price</th>
+						{/* <th className={styles.header}>Tanggal</th> */}
+						<th className={styles.header}>Timestamp</th>
 					</tr>
 				</thead>
 				<tbody>
 					{data.map((item) => (
-						<tr>
-							<td>{item.uuid}</td>
-							<td>{item.komoditas}</td>
-							<td>{item.area_provinsi}</td>
-							<td>{item.area_kota}</td>
-							<td>{item.size}</td>
-							<td>{item.price}</td>
-							<td>{item.tgl_parsed}</td>
-							<td>{new Date(parseInt(item.timestamp)).toLocaleString()}</td>
+						<tr className={ styles.row}>
+							{/* <td>{item.uuid}</td> */}
+							<td className={styles.cell}>{item.komoditas}</td>
+							<td className={styles.cell}>{item.area_provinsi}</td>
+							<td className={styles.cell}>{item.area_kota}</td>
+							<td className={`${styles.cell} ${styles.size}`}>{item.size}</td>
+							<td className={styles.cell}>{item.price}</td>
+							{/* <td className={styles.cell}>{item.tgl_parsed}</td> */}
+							<td className={styles.cell}>
+								{new Date(
+									parseInt(item.timestamp)
+								).toLocaleString()}
+							</td>
 						</tr>
 					))}
 				</tbody>
 			</table>
-		</div>
+		
 	)
 }

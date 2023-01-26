@@ -1,8 +1,12 @@
 import { ChangeEvent, useCallback, useEffect, useState } from "react"
-import "./App.scss"
+// import "./App.scss"
 import { useGetData } from "util/useGetData"
 import { TmpArea } from "type/Area"
 import Table from "component/Table"
+import Filter from "component/Filter"
+import style from "./App.module.scss"
+import Input from "component/Input"
+import Pagination from "component/Pagination"
 
 function App() {
 	const [offset, setOffset] = useState(0)
@@ -35,7 +39,7 @@ function App() {
 		[]
 	)
 	return (
-		<div className="">
+		<div className={style.app}>
 			<div>
 				<button
 					onClick={() => {
@@ -101,9 +105,14 @@ function App() {
 			</button>
 			<h1>Hai</h1>
 			<input onChange={setSearch} value={search} />
-			<p>{selectedProvince}</p>
-			<p>{selectedCity}</p>
-			<Table data={final} />
+			<div className={`${style.container} ${style.search}`}>
+				<Input />
+				<Pagination />
+			</div>
+			<div className={style.container}>
+				<Filter />
+				<Table data={final} />
+			</div>
 			{/* <p>{JSON.stringify(area[selectedProvince])}</p> */}
 		</div>
 	)

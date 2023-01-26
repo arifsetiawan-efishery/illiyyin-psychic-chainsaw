@@ -1,0 +1,23 @@
+@use '../var';
+
+.container{
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.select{
+  padding: 8px 4px;
+  border-radius: 6px;
+  margin-right: 8px;
+}
+.button{
+  background-color: var.$green;
+  color: white;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-weight: 700;
+  border: 0;
+  border-color: var.$tea-green;
+  border-style: solid;
+  border-radius: 6px;
+}

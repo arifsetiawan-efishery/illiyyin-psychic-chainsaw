@@ -1,0 +1,15 @@
+.app{
+  margin:0 auto;
+  max-width: 1440px;
+}
+.container{
+  margin-top: 8px;
+  display: flex;
+  gap: 16px;
+}
+.search{
+  margin-left: 256px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

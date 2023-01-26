@@ -1,0 +1,11 @@
+@use '../var';
+.container{
+  width: 100%;
+}
+.label{
+  color: var.$green;
+  // font-size: ;
+  font-weight: 800;
+  margin: 0;
+  margin-bottom: 4px;
+}

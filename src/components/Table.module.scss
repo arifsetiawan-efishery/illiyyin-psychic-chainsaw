@@ -1,0 +1,33 @@
+@use "../var";
+
+table {
+	border-spacing: 0;
+	width: 100%;
+  border: 1px;
+  border-style: solid;
+  border-color:var.$green;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th.header {
+	background-color: var.$green;
+	color: white;
+	padding: 12px 24px;
+	text-align: left;
+}
+
+td.cell {
+	padding: 16px 24px;
+}
+tr.row {
+	&:nth-child(odd) {
+		background-color: white;
+	}
+	&:nth-child(even) {
+		background-color: var.$dew-green;
+	}
+}
+.size {
+	text-align: right;
+}
