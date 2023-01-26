@@ -5,6 +5,12 @@ export type Data = {
   area_kota: string
   size: string
   price: string
-  tgl_parsed: Date
+  tgl_parsed: string
   timestamp: string
+}
+
+export type Query={
+  area_provinsi: string|undefined
+  area_kota: string|undefined
+  size: string|undefined
 }

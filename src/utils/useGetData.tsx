@@ -1,16 +1,30 @@
-import { useCallback, useState, useEffect } from "react"
+import { useCallback, useState, useEffect, ChangeEvent } from "react"
 import { Area, RawArea, TmpArea } from "type/Area"
-import { Data } from "type/Data"
+import { Data, Query } from "type/Data"
 import { Size } from "type/Size"
 
-export const useGetData = () => {
+export const useGetData = ({ query }: { query: Query }) => {
 	const [data, setData] = useState<Data[]>([])
 	const [area, setArea] = useState<TmpArea>({})
 	const [size, setSize] = useState<Size[]>([])
+	const [search, setSearch] = useState<string>("")
+	const [rawData, setRawData] = useState<Data[]>([])
 	const getData = async () => {
 		try {
+			let searchQuery = ""
+			if (Object.values(query).some((item) => item)) {
+				const objQuery = (Object.keys(query) as (keyof Query)[]).filter(
+					(item) => query[item]
+				)
+				let finalQuery = {} as Query
+				for (const item of objQuery) {
+					finalQuery[item] = query[item]
+				}
+				searchQuery += `search=${JSON.stringify(finalQuery)}`
+			}
+			console.log(search, query)
 			const req = await fetch(
-				`https://stein.efishery.com/v1/storages/5e1edf521073e315924ceab4/list?`
+				`https://stein.efishery.com/v1/storages/5e1edf521073e315924ceab4/list?${searchQuery}`
 				// search={"komoditas":"LELE"}
 			)
 			const res: Data[] = await req.json()
@@ -19,14 +33,22 @@ export const useGetData = () => {
 				if (
 					(Object.keys(item) as (keyof Data)[]).some(
 						(val) => item[val] == null
-					)
+					) ||
+					Object.keys(item).length == 0
 				) {
 					continue
 				}
 				tmpArr.push(item)
-      }
-      console.log(tmpArr)
-			setData(tmpArr)
+			}
+			setRawData(tmpArr)
+			if (search.length > 0) {
+				const filtered=tmpArr.filter((item) => item.komoditas.toLowerCase().includes(search.toLowerCase()))
+				console.log(filtered,tmpArr,search)
+				setData(filtered)
+			} else {
+				setData(tmpArr)
+				
+			}
 		} catch (error) {
 			console.log(error)
 		}
@@ -77,11 +99,22 @@ export const useGetData = () => {
 		}
 	}, [])
 
+	const handleSearch = (e:ChangeEvent<HTMLInputElement>) => {
+		setSearch(e.target.value)
+	}
+
 	useEffect(() => {
-		getData()
 		getSize()
 		getArea()
 	}, [])
 
-	return { data, area, size }
+	useEffect(() => {
+		getData()
+	}, [query.area_kota, query.area_provinsi, query.size])
+
+	useEffect(() => {
+		setData(rawData.filter((item) => item.komoditas.toLowerCase().includes(search.toLowerCase())))
+	}, [search])
+
+	return { data, area, size, setSearch: handleSearch,search }
 }
