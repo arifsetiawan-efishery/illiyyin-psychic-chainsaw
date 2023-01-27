@@ -1,16 +1,24 @@
+import { useQuery } from "@tanstack/react-query"
 import { useCallback, useState, useEffect, ChangeEvent } from "react"
 import { Area, RawArea, TmpArea } from "type/Area"
 import { Data, Query } from "type/Data"
 import { Size } from "type/Size"
+import { Order } from "type/Table"
 
 export const useGetData = ({ query }: { query: Query }) => {
 	const [data, setData] = useState<Data[]>([])
 	const [area, setArea] = useState<TmpArea>({})
 	const [size, setSize] = useState<Size[]>([])
+	const [order, setOrder] = useState<Order>({
+		by: "uuid",
+		isAsc: true,
+	})
 	const [search, setSearch] = useState<string>("")
 	const [rawData, setRawData] = useState<Data[]>([])
-	const getData = async () => {
-		try {
+
+	useQuery({
+		queryKey: [query],
+		queryFn: async () => {
 			let searchQuery = ""
 			if (Object.values(query).some((item) => item)) {
 				const objQuery = (Object.keys(query) as (keyof Query)[]).filter(
@@ -42,19 +50,19 @@ export const useGetData = ({ query }: { query: Query }) => {
 			}
 			setRawData(tmpArr)
 			if (search.length > 0) {
-				const filtered=tmpArr.filter((item) => item.komoditas.toLowerCase().includes(search.toLowerCase()))
-				console.log(filtered,tmpArr,search)
+				const filtered = tmpArr.filter((item) =>
+					item.komoditas.toLowerCase().includes(search.toLowerCase())
+				)
+				console.log(filtered, tmpArr, search)
 				setData(filtered)
 			} else {
 				setData(tmpArr)
-				
 			}
-		} catch (error) {
-			console.log(error)
-		}
-	}
-	const getArea = useCallback(async () => {
-		try {
+		},
+	})
+	useQuery({
+		queryKey: ["areaData"],
+		queryFn: async () => {
 			const req = await fetch(
 				`https://stein.efishery.com/v1/storages/5e1edf521073e315924ceab4/option_area`
 			)
@@ -80,12 +88,11 @@ export const useGetData = ({ query }: { query: Query }) => {
 				})
 			}
 			setArea(tmpObj)
-		} catch (error) {
-			console.log(error)
-		}
-	}, [])
-	const getSize = useCallback(async () => {
-		try {
+		},
+	})
+	useQuery({
+		queryKey: ["sizeData"],
+		queryFn: async () => {
 			const req = await fetch(
 				`https://stein.efishery.com/v1/storages/5e1edf521073e315924ceab4/option_size`
 			)
@@ -94,27 +101,41 @@ export const useGetData = ({ query }: { query: Query }) => {
 				(a: Size, b: Size) => parseInt(a.size) - parseInt(b.size)
 			)
 			setSize(sortedSize)
-		} catch (error) {
-			console.log(error)
-		}
-	}, [])
+		},
+	})
 
-	const handleSearch = (e:ChangeEvent<HTMLInputElement>) => {
+	const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
 		setSearch(e.target.value)
 	}
 
 	useEffect(() => {
-		getSize()
-		getArea()
-	}, [])
+		setData(
+			rawData.sort((a, b) => {
+				if (
+					["price", "size", "timestamp"].some(
+						(item) => item == order.by
+					)
+				) {
+					if (!order.isAsc) {
+						return parseInt(b[order.by]) - parseInt(a[order.by])
+					}
+					return parseInt(a[order.by]) - parseInt(b[order.by])
+				}
+				if (!order.isAsc) {
+					return b[order.by].localeCompare(a[order.by])
+				}
+				return a[order.by].localeCompare(b[order.by])
+			})
+		)
+	}, [order.by, order.isAsc])
 
 	useEffect(() => {
-		getData()
-	}, [query.area_kota, query.area_provinsi, query.size])
-
-	useEffect(() => {
-		setData(rawData.filter((item) => item.komoditas.toLowerCase().includes(search.toLowerCase())))
+		setData(
+			rawData.filter((item) =>
+				item.komoditas.toLowerCase().includes(search.toLowerCase())
+			)
+		)
 	}, [search])
 
-	return { data, area, size, setSearch: handleSearch,search }
+	return { data, area, size, setSearch: handleSearch, search, setOrder,total:data.length }
 }

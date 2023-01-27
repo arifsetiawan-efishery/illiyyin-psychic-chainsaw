@@ -3,11 +3,11 @@
 table {
 	border-spacing: 0;
 	width: 100%;
-  border: 1px;
-  border-style: solid;
-  border-color:var.$green;
-  border-radius: 8px;
-  overflow: hidden;
+	border: 1px;
+	border-style: solid;
+	border-color: var.$green;
+	border-radius: 8px;
+	overflow: hidden;
 }
 
 th.header {
@@ -30,4 +30,12 @@ tr.row {
 }
 .size {
 	text-align: right;
+}
+.spinner {
+	text-align: center;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	margin: auto;
+	max-width: 80px;
 }
