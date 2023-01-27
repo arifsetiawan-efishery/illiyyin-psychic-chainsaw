@@ -16,8 +16,8 @@ export const useGetData = ({ query }: { query: Query }) => {
 	const [search, setSearch] = useState<string>("")
 	const [rawData, setRawData] = useState<Data[]>([])
 
-	useQuery({
-		queryKey: [query],
+	 useQuery({
+		queryKey: [query,"hargaData"],
 		queryFn: async () => {
 			let searchQuery = ""
 			if (Object.values(query).some((item) => item)) {
@@ -30,7 +30,6 @@ export const useGetData = ({ query }: { query: Query }) => {
 				}
 				searchQuery += `search=${JSON.stringify(finalQuery)}`
 			}
-			console.log(search, query)
 			const req = await fetch(
 				`https://stein.efishery.com/v1/storages/5e1edf521073e315924ceab4/list?${searchQuery}`
 				// search={"komoditas":"LELE"}
@@ -53,14 +52,14 @@ export const useGetData = ({ query }: { query: Query }) => {
 				const filtered = tmpArr.filter((item) =>
 					item.komoditas.toLowerCase().includes(search.toLowerCase())
 				)
-				console.log(filtered, tmpArr, search)
 				setData(filtered)
 			} else {
 				setData(tmpArr)
 			}
+			return tmpArr
 		},
 	})
-	useQuery({
+	 useQuery({
 		queryKey: ["areaData"],
 		queryFn: async () => {
 			const req = await fetch(
@@ -88,9 +87,10 @@ export const useGetData = ({ query }: { query: Query }) => {
 				})
 			}
 			setArea(tmpObj)
+			return tmpObj
 		},
 	})
-	useQuery({
+	 useQuery({
 		queryKey: ["sizeData"],
 		queryFn: async () => {
 			const req = await fetch(
@@ -101,6 +101,7 @@ export const useGetData = ({ query }: { query: Query }) => {
 				(a: Size, b: Size) => parseInt(a.size) - parseInt(b.size)
 			)
 			setSize(sortedSize)
+			return sortedSize
 		},
 	})
 
@@ -137,5 +138,13 @@ export const useGetData = ({ query }: { query: Query }) => {
 		)
 	}, [search])
 
-	return { data, area, size, setSearch: handleSearch, search, setOrder,total:data.length }
+	return {
+		data,
+		area,
+		size,
+		setSearch: handleSearch,
+		search,
+		setOrder,
+		total: data.length,
+	}
 }

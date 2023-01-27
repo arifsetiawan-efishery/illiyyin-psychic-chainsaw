@@ -1,7 +1,59 @@
 import React from "react"
 import style from "./Filter.module.scss"
 import FilterSection from "./FilterSection"
-import { Filter as Props } from "type/Filter"
+import {
+	Filter as Props,
+	SizeProps,
+	ProvinceProps,
+	CityProps,
+} from "type/Filter"
+
+export const Size = ({ size, setSize, listSize }: SizeProps) => {
+	return (
+		<select
+			className={style.select}
+			onChange={(e) => setSize?.(e.target.value)}
+			value={size}
+		>
+			{listSize?.map((item) => (
+				<option value={item.size} key={item.size}>
+					{item.size}
+				</option>
+			))}
+		</select>
+	)
+}
+export const Province = ({ province, listProvince, action }: ProvinceProps) => {
+	return (
+		<select className={style.select} onChange={action} value={province}>
+			{listProvince
+				? Object.keys(listProvince).map((item) => (
+						<option value={item} key={item}>
+							{item}
+						</option>
+				  ))
+				: null}
+		</select>
+	)
+}
+export const City = ({ city, province, listProvince, setCity }: CityProps) => {
+	return (
+		<select
+			className={style.select}
+			onChange={(e) => setCity?.(e.target.value)}
+			value={city}
+		>
+			{province && listProvince
+				? listProvince[province].map((item) => (
+						<option value={item} key={item}>
+							{item}
+						</option>
+				  ))
+				: null}
+		</select>
+	)
+}
+
 export default function Filter({
 	size,
 	city,
@@ -11,24 +63,19 @@ export default function Filter({
 	setCity,
 	setProvince,
 	setSize,
+	addItem,
 }: Props) {
 	return (
 		<div className={style.container}>
-			<p>Filter</p>
 			<div className={style.section}>
+				<p>Filter</p>
 				<FilterSection label="Size">
 					<div className={style.wrapper}>
-						<select
-							className={style.select}
-							onChange={(e) => setSize(e.target.value)}
-							value={size}
-						>
-							{listSize.map((item) => (
-								<option value={item.size} key={item.size}>
-									{item.size}
-								</option>
-							))}
-						</select>
+						<Size
+							size={size}
+							setSize={setSize}
+							listSize={listSize}
+						/>
 						<button
 							onClick={() => setSize(undefined)}
 							className={`${style.clear_button} ${
@@ -41,20 +88,14 @@ export default function Filter({
 				</FilterSection>
 				<FilterSection label="Province">
 					<div className={style.wrapper}>
-						<select
-							className={style.select}
-							onChange={(e) => {
+						<Province
+							province={province}
+							listProvince={listProvince}
+							action={(e) => {
 								setProvince(e.target.value)
 								setCity(undefined)
 							}}
-							value={province}
-						>
-							{Object.keys(listProvince).map((item) => (
-								<option value={item} key={item}>
-									{item}
-								</option>
-							))}
-						</select>
+						/>
 						<button
 							onClick={() => setProvince(undefined)}
 							className={`${style.clear_button} ${
@@ -67,19 +108,13 @@ export default function Filter({
 				</FilterSection>
 				<FilterSection label="City">
 					<div className={style.wrapper}>
-						<select
-							className={style.select}
-							onChange={(e) => setCity(e.target.value)}
-							value={city}
-						>
-							{province
-								? listProvince[province].map((item) => (
-										<option value={item} key={item}>
-											{item}
-										</option>
-								  ))
-								: null}
-						</select>
+						<City
+							city={city}
+							province={province}
+							listProvince={listProvince}
+							setCity={setCity}
+						/>
+
 						<button
 							onClick={() => setCity(undefined)}
 							className={`${style.clear_button} ${
@@ -91,6 +126,9 @@ export default function Filter({
 					</div>
 				</FilterSection>
 			</div>
+			<button className={style.add_button} onClick={addItem}>
+				Add Item
+			</button>
 		</div>
 	)
 }

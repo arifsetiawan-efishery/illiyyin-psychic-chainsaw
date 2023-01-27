@@ -1,7 +1,8 @@
-import { ChangeEvent, Dispatch, SetStateAction } from "react"
+import { ChangeEvent, HTMLInputTypeAttribute } from "react"
 
 export type Input = {
-  setValue: (value:ChangeEvent<HTMLInputElement>)=>void
-  value: string
-  placeholder:string
+	setValue: (value: ChangeEvent<HTMLInputElement>) => void
+	value: string
+	placeholder: string
+	type?: HTMLInputTypeAttribute
 }
